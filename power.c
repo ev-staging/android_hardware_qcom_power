@@ -34,7 +34,9 @@
 #define STATE_HDR_OFF "state=3"
 
 #define MAX_LENGTH         50
+#ifndef BOOST_SOCKET
 #define BOOST_SOCKET       "/dev/socket/pb"
+#endif
 
 static int client_sockfd;
 static struct sockaddr_un client_addr;
