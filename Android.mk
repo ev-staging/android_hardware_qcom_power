@@ -1,9 +1,11 @@
 LOCAL_PATH := $(call my-dir)
 
-ifneq ($(TARGET_PROVIDES_POWERHAL),true)
-ifneq ($(TARGET_USES_CM_POWERHAL),true)
+# Hey Mr. Make Author, DIAF PLX
+ifeq ($(TARGET_POWERHAL_VARIANT),qcom)
+USE_ME := true
+endif
 
-ifneq (,$(filter true,$(BOARD_USES_QCOM_HARDWARE) $(WITH_QC_PERF)))
+ifneq (,$(filter true,$(USE_ME) $(WITH_QC_PERF)))
 
 # HAL module implemenation stored in
 # hw/<POWERS_HARDWARE_MODULE_ID>.<ro.hardware>.so
@@ -30,8 +32,8 @@ ifeq ($(call is-board-platform-in-list, msm8610), true)
 LOCAL_SRC_FILES += power-8610.c
 endif
 
-ifeq ($(TARGET_USES_INTERACTION_BOOST),true)
-    LOCAL_CFLAGS += -DINTERACTION_BOOST
+ifeq ($(TARGET_USES_CPU_BOOST_HINT),true)
+    LOCAL_CFLAGS += -DBOOST_HINT
 endif
 
 ifneq ($(TARGET_POWERHAL_SET_INTERACTIVE_EXT),)
@@ -47,6 +49,4 @@ endif
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)
 
-endif # BOARD_USES_QCOM_HARDWARE || WITH_QC_PERF
-endif # !TARGET_USES_CM_POWERHAL
-endif # !TARGET_PROVIDES_POWERHAL
+endif # TARGET_POWERHAL_VARIANT == qcom || WITH_QC_PERF
