@@ -1,3 +1,5 @@
+# TODO:  Find a better way to separate build configs for ADP vs non-ADP devices
+ifneq ($(TARGET_BOARD_AUTO),true)
 LOCAL_PATH := $(call my-dir)
 
 # Hey Mr. Make Author, DIAF PLX
@@ -97,3 +99,4 @@ LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)
 
 endif # TARGET_POWERHAL_VARIANT == qcom || WITH_QC_PERF
+endif # !TARGET_BOARD_AUTO
