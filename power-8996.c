@@ -201,6 +201,7 @@ int power_hint_override(__unused struct power_module *module,
     struct timespec cur_boost_timespec;
     long long elapsed_time;
     int duration;
+    char governor[80];
 
     int resources_launch[] = {
         SCHED_BOOST_ON_V3, 0x1,
@@ -223,11 +224,28 @@ int power_hint_override(__unused struct power_module *module,
         MIN_FREQ_BIG_CORE_0, 0x3E8,
         MIN_FREQ_LITTLE_CORE_0, 0x3E8,
         SCHED_BOOST_ON_V3, 0x1,
-   //   SCHED_GROUP_ON, 0x1,
+        // SCHED_GROUP_ON, 0x1,
     };
 
     int resources_interaction_boost[] = {
         MIN_FREQ_BIG_CORE_0, 0x3E8,
+    };
+
+    int resources_launch_sched_boost[] = {
+        MAX_FREQ_BIG_CORE_0, 0xFFF,
+        MAX_FREQ_LITTLE_CORE_0, 0xFFF,
+        MIN_FREQ_BIG_CORE_0, 0xFFF,
+        MIN_FREQ_LITTLE_CORE_0, 0xFFF,
+        ALL_CPUS_PWR_CLPS_DIS_V3, 0x1,
+        STOR_CLK_SCALE_DIS, 0x32,
+        CPUBW_HWMON_MIN_FREQ, 140,
+    };
+
+    int resources_interaction_sched_boost[] = {
+        MIN_FREQ_BIG_CORE_0, 1100,
+        MIN_FREQ_LITTLE_CORE_0, 1100,
+        STOR_CLK_SCALE_DIS, 0x32,
+        CPUBW_HWMON_MIN_FREQ, 0x33,
     };
 
     if (hint == POWER_HINT_SET_PROFILE) {
@@ -238,6 +256,12 @@ int power_hint_override(__unused struct power_module *module,
     /* Skip other hints in power save mode */
     if (current_power_profile == PROFILE_POWER_SAVE)
         return HINT_HANDLED;
+
+    if (get_scaling_governor(governor, sizeof(governor)) == -1) {
+        ALOGE("Can't obtain scaling governor.");
+
+        return HINT_NONE;
+    }
 
     if (hint == POWER_HINT_INTERACTION) {
         duration = data ? *((int *)data) : 500;
@@ -256,6 +280,17 @@ int power_hint_override(__unused struct power_module *module,
 
         s_previous_boost_timespec = cur_boost_timespec;
 
+        if (strncmp(governor, SCHED_GOVERNOR, strlen(SCHED_GOVERNOR)) == 0) {
+            /**
+             * Scheduler is EAS.
+             * foreground schedtune boost 50 and scaling_min_freq 1100MHz
+             */
+            interaction(duration, ARRAY_SIZE(resources_interaction_sched_boost),
+                    resources_interaction_sched_boost);
+
+            return HINT_HANDLED;
+        }
+
         if (duration >= 1500) {
             interaction(duration, ARRAY_SIZE(resources_interaction_fling_boost),
                     resources_interaction_fling_boost);
@@ -269,8 +304,13 @@ int power_hint_override(__unused struct power_module *module,
     if (hint == POWER_HINT_LAUNCH) {
         duration = 2000;
 
-        interaction(duration, ARRAY_SIZE(resources_launch),
-                resources_launch);
+        if (strncmp(governor, SCHED_GOVERNOR, strlen(SCHED_GOVERNOR)) == 0) {
+            interaction(duration, ARRAY_SIZE(resources_launch_sched_boost),
+                    resources_launch_sched_boost);
+        } else {
+            interaction(duration, ARRAY_SIZE(resources_launch),
+                    resources_launch);
+        }
         return HINT_HANDLED;
     }
 

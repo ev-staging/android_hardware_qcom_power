@@ -322,7 +322,7 @@ enum SCHEDULER {
 };
 
 enum STORAGE {
-    STOR_CLK_SCALE_DIS          = 0x42C0C000,
+    STOR_CLK_SCALE_DIS          = 0x42C0C000,  /* EAS schedtune/sched boost */
 };
 
 enum GPU {
