@@ -62,6 +62,7 @@ static int profile_high_performance[] = {
     CPUS_ONLINE_MIN_LITTLE, 0x2,
     MIN_FREQ_BIG_CORE_0, 0xFFF,
     MIN_FREQ_LITTLE_CORE_0, 0xFFF,
+    STOR_CLK_SCALE_DIS, 0x4B,
 };
 
 static int profile_power_save[] = {
