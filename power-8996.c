@@ -243,7 +243,6 @@ int power_hint_override(__unused struct power_module *module,
     };
 
     int resources_interaction_sched_boost[] = {
-        MIN_FREQ_BIG_CORE_0, 1100,
         MIN_FREQ_LITTLE_CORE_0, 1100,
         STOR_CLK_SCALE_DIS, 0x32,
         CPUBW_HWMON_MIN_FREQ, 0x33,
