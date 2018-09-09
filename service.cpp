@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
+#ifdef USE_1_2_POWER
+#define LOG_TAG "android.hardware.power@1.2-service-qti"
+#else
 #define LOG_TAG "android.hardware.power@1.1-service-qti"
+#endif
 
 // #define LOG_NDEBUG 0
 
@@ -36,7 +40,11 @@ using android::hardware::configureRpcThreadpool;
 using android::hardware::joinRpcThreadpool;
 
 // Generated HIDL files
+#ifdef USE_1_2_POWER
+using android::hardware::power::V1_2::implementation::Power;
+#else
 using android::hardware::power::V1_1::implementation::Power;
+#endif
 
 int main() {
 #ifdef ARCH_ARM_32
@@ -46,7 +54,11 @@ int main() {
     status_t status;
     android::sp<Power> service = nullptr;
 
+#ifdef USE_1_2_POWER
+    ALOGI("Power HAL Service 1.2 for QCOM is starting.");
+#else
     ALOGI("Power HAL Service 1.1 for QCOM is starting.");
+#endif
 
     service = new Power();
     if (service == nullptr) {

@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
+#ifdef USE_1_2_POWER
+#define LOG_TAG "android.hardware.power@1.2-service-qti"
+#else
 #define LOG_TAG "android.hardware.power@1.1-service-qti"
+#endif
 
 // #define LOG_NDEBUG 0
 
@@ -32,7 +36,11 @@ extern struct stat_pair rpm_stat_map[];
 namespace android {
 namespace hardware {
 namespace power {
+#ifdef USE_1_2_POWER
+namespace V1_2 {
+#else
 namespace V1_1 {
+#endif
 namespace implementation {
 
 using ::android::hardware::power::V1_0::Feature;
@@ -40,6 +48,9 @@ using ::android::hardware::power::V1_0::PowerHint;
 using ::android::hardware::power::V1_0::PowerStatePlatformSleepState;
 using ::android::hardware::power::V1_0::Status;
 using ::android::hardware::power::V1_1::PowerStateSubsystem;
+#ifndef NO_WLAN_STATS
+using ::android::hardware::power::V1_1::PowerStateSubsystemSleepState;
+#endif
 using ::android::hardware::hidl_vec;
 using ::android::hardware::Return;
 using ::android::hardware::Void;
@@ -226,10 +237,16 @@ done:
 #endif
 }
 
-Return<void> Power::powerHintAsync(PowerHint hint, int32_t data) {
+Return<void> Power::powerHintAsync(PowerHint_1_0 hint, int32_t data) {
     // just call the normal power hint in this oneway function
     return powerHint(hint, data);
 }
+
+#ifdef USE_1_2_POWER
+Return<void> Power::powerHintAsync_1_2(PowerHint_1_2 hint, int32_t data) {
+    return powerHint(static_cast<PowerHint_1_0> (hint), data);
+}
+#endif
 
 Return<int32_t> Power::getFeature(EvervolvFeature feature)  {
     if (feature == EvervolvFeature::SUPPORTED_PROFILES) {
@@ -262,7 +279,7 @@ fail:
 }
 
 }  // namespace implementation
-}  // namespace V1_1
+}  // namespace V1_(1/2)
 }  // namespace power
 }  // namespace hardware
 }  // namespace android

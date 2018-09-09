@@ -192,6 +192,7 @@ ifeq ($(TARGET_ARCH),arm)
 qcom_power_cflags += -DARCH_ARM_32
 endif
 
+# Version 1.1
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(qcom_power_src_files)
@@ -204,6 +205,25 @@ LOCAL_WHOLE_STATIC_LIBRARIES := $(qcom_power_whole_static_libs)
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_MODULE := android.hardware.power@1.1-service-qti
 LOCAL_INIT_RC := android.hardware.power@1.1-service-qti.rc
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_OWNER := qcom
+LOCAL_VENDOR_MODULE := true
+
+include $(BUILD_EXECUTABLE)
+
+# Version 1.2
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(qcom_power_src_files)
+LOCAL_C_INCLUDES := $(qcom_power_c_includes)
+LOCAL_CFLAGS := $(qcom_power_cflags) -DUSE_1_2_POWER
+LOCAL_HEADER_LIBRARIES := $(qcom_power_header_libs)
+LOCAL_SHARED_LIBRARIES := $(qcom_power_shared_libs) android.hardware.power@1.2
+LOCAL_STATIC_LIBRARIES := $(qcom_power_static_libs)
+LOCAL_WHOLE_STATIC_LIBRARIES := $(qcom_power_whole_static_libs)
+LOCAL_MODULE_RELATIVE_PATH := hw
+LOCAL_MODULE := android.hardware.power@1.2-service-qti
+LOCAL_INIT_RC := android.hardware.power@1.2-service-qti.rc
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_OWNER := qcom
 LOCAL_VENDOR_MODULE := true

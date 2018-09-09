@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_HARDWARE_POWER_V1_1_POWER_H
-#define ANDROID_HARDWARE_POWER_V1_1_POWER_H
+#ifndef ANDROID_HARDWARE_POWER_POWER_QTI_H
+#define ANDROID_HARDWARE_POWER_POWER_QTI_H
 
+#ifdef USE_1_2_POWER
+#include <android/hardware/power/1.2/IPower.h>
+#else
 #include <android/hardware/power/1.1/IPower.h>
+#endif
 #include <vendor/evervolv/power/1.0/IEvervolvPower.h>
 #include <hidl/MQDescriptor.h>
 #include <hidl/Status.h>
@@ -27,12 +31,21 @@
 namespace android {
 namespace hardware {
 namespace power {
+#ifdef USE_1_2_POWER
+namespace V1_2 {
+#else
 namespace V1_1 {
+#endif
 namespace implementation {
 
 using ::android::hardware::power::V1_0::Feature;
-using ::android::hardware::power::V1_0::PowerHint;
+using PowerHint_1_0 = ::android::hardware::power::V1_0::PowerHint;
+#ifdef USE_1_2_POWER
+using PowerHint_1_2 = ::android::hardware::power::V1_2::PowerHint;
+using ::android::hardware::power::V1_2::IPower;
+#else
 using ::android::hardware::power::V1_1::IPower;
+#endif
 using ::vendor::evervolv::power::V1_0::IEvervolvPower;
 using ::vendor::evervolv::power::V1_0::EvervolvFeature;
 using ::android::hardware::Return;
@@ -45,13 +58,17 @@ struct Power : public IPower, public IEvervolvPower {
     status_t registerAsSystemService();
 
     Return<void> setInteractive(bool interactive) override;
-    Return<void> powerHint(PowerHint hint, int32_t data) override;
+    Return<void> powerHint(PowerHint_1_0 hint, int32_t data) override;
     Return<void> setFeature(Feature feature, bool activate) override;
     Return<void> getPlatformLowPowerStats(getPlatformLowPowerStats_cb _hidl_cb) override;
 
     // Methods from ::android::hardware::power::V1_1::IPower follow.
     Return<void> getSubsystemLowPowerStats(getSubsystemLowPowerStats_cb _hidl_cb) override;
-    Return<void> powerHintAsync(PowerHint hint, int32_t data) override;
+    Return<void> powerHintAsync(PowerHint_1_0 hint, int32_t data) override;
+#ifdef USE_1_2_POWER
+    // Methods from ::android::hardware::power::V1_2::IPower follow
+    Return<void> powerHintAsync_1_2(PowerHint_1_2 hint, int32_t data) override;
+#endif
 
     // Methods from ::vendor::evervolv::power::V1_0::IEvervolvPower follow.
     Return<int32_t> getFeature(EvervolvFeature feature) override;
@@ -61,9 +78,9 @@ struct Power : public IPower, public IEvervolvPower {
 };
 
 }  // namespace implementation
-}  // namespace V1_0/1
+}  // namespace V1_(1/2)
 }  // namespace power
 }  // namespace hardware
 }  // namespace android
 
-#endif  // ANDROID_HARDWARE_POWER_V1_1_POWER_H
+#endif  // ANDROID_HARDWARE_POWER_POWER_QTI_H
