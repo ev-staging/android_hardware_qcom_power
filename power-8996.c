@@ -57,7 +57,6 @@ const int kMaxInteractiveDuration = 5000; /* ms */
 const int kMinInteractiveDuration = 500; /* ms */
 const int kMinFlingDuration = 1500; /* ms */
 
-#ifdef PERF_PROFILES
 static int current_power_profile = PROFILE_BALANCED;
 
 static int profile_high_performance[] = {
@@ -139,7 +138,6 @@ static int set_power_profile(int profile)
     }
     return ret;
 }
-#endif
 
 typedef enum {
     NORMAL_MODE       = 0,
@@ -328,7 +326,6 @@ int power_hint_override(power_hint_t hint, void *data)
 {
     int ret_val = HINT_NONE;
 
-#ifdef PERF_PROFILES
     if (hint == POWER_HINT_SET_PROFILE) {
         if (set_power_profile(*(int32_t *)data) < 0)
             ALOGE("Setting power profile failed. perf HAL not started?");
@@ -340,7 +337,6 @@ int power_hint_override(power_hint_t hint, void *data)
             current_power_profile == PROFILE_HIGH_PERFORMANCE) {
         return HINT_HANDLED;
     }
-#endif
 
     switch (hint) {
         case POWER_HINT_VIDEO_ENCODE:
