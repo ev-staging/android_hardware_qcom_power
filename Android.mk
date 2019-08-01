@@ -19,10 +19,17 @@ LOCAL_PATH := $(call my-dir)
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)
 
-include $(CLEAR_VARS)
+qcom_power_src_files :=
+qcom_power_cflags :=
+qcom_power_c_includes :=
+qcom_power_header_libs :=
+qcom_power_shared_libs :=
+qcom_power_static_libs :=
+qcom_power_whole_static_libs :=
 
-LOCAL_MODULE_RELATIVE_PATH := hw
-LOCAL_SHARED_LIBRARIES := \
+qcom_power_shared_libs += \
+    android.hardware.power@1.0 \
+    android.hardware.power@1.1 \
     liblog \
     libcutils \
     libdl \
@@ -31,9 +38,10 @@ LOCAL_SHARED_LIBRARIES := \
     libhidltransport \
     libhardware \
     libhwbinder \
-    libutils
+    libutils \
+    vendor.evervolv.power@1.0
 
-LOCAL_SRC_FILES := \
+qcom_power_src_files += \
     service.cpp \
     Power.cpp \
     power-helper.c \
@@ -42,159 +50,164 @@ LOCAL_SRC_FILES := \
     list.c \
     hint-data.c
 
-LOCAL_HEADER_LIBRARIES += libutils_headers
-LOCAL_HEADER_LIBRARIES += libhardware_headers
-LOCAL_C_INCLUDES := external/libxml2/include \
+qcom_power_header_libs += libutils_headers libhardware_headers
+qcom_power_c_includes += external/libxml2/include \
                     external/icu/icu4c/source/common
 
-LOCAL_CFLAGS += -Wall -Wextra -Werror
+qcom_power_cflags := -Wall -Wextra -Werror
 
 ifneq ($(BOARD_POWER_CUSTOM_BOARD_LIB),)
-    LOCAL_WHOLE_STATIC_LIBRARIES += $(BOARD_POWER_CUSTOM_BOARD_LIB)
+    qcom_power_whole_static_libs += $(BOARD_POWER_CUSTOM_BOARD_LIB)
 else
 
 # Include target-specific files.
 ifeq ($(call is-board-platform-in-list, msm8960), true)
-LOCAL_SRC_FILES += power-8960.c
+qcom_power_src_files += power-8960.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8974), true)
-LOCAL_SRC_FILES += power-8974.c
+qcom_power_src_files += power-8974.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8226), true)
-LOCAL_SRC_FILES += power-8226.c
+qcom_power_src_files += power-8226.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8610), true)
-LOCAL_SRC_FILES += power-8610.c
+qcom_power_src_files += power-8610.c
 endif
 
 ifeq ($(call is-board-platform-in-list, apq8084), true)
-LOCAL_SRC_FILES += power-8084.c
+qcom_power_src_files += power-8084.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8994), true)
-LOCAL_SRC_FILES += power-8994.c
+qcom_power_src_files += power-8994.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8992), true)
-LOCAL_SRC_FILES += power-8992.c
+qcom_power_src_files += power-8992.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8996), true)
-LOCAL_SRC_FILES += power-8996.c
+qcom_power_src_files += power-8996.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msm8937), true)
-LOCAL_SRC_FILES += power-8937.c
+qcom_power_src_files += power-8937.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msm8952), true)
-LOCAL_SRC_FILES += power-8952.c
+qcom_power_src_files += power-8952.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msm8953), true)
-LOCAL_SRC_FILES += power-8953.c
+qcom_power_src_files += power-8953.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msm8998 apq8098_latv), true)
-LOCAL_SRC_FILES += power-8998.c
+qcom_power_src_files += power-8998.c
 endif
 
 ifeq ($(call is-board-platform-in-list,sdm660), true)
-LOCAL_SRC_FILES += power-660.c
+qcom_power_src_files += power-660.c
 endif
 
 ifeq ($(call is-board-platform-in-list,sdm845), true)
-LOCAL_SRC_FILES += power-845.c
+qcom_power_src_files += power-845.c
 endif
 
 ifeq ($(call is-board-platform-in-list,sdm710), true)
-LOCAL_SRC_FILES += power-710.c
+qcom_power_src_files += power-710.c
 endif
 
 ifeq ($(call is-board-platform-in-list,qcs605), true)
-LOCAL_SRC_FILES += power-710.c
+qcom_power_src_files += power-710.c
 endif
 
 ifeq ($(call is-board-platform-in-list,trinket), true)
-LOCAL_SRC_FILES += power-6125.c
+qcom_power_src_files += power-6125.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msmnile), true)
-LOCAL_SRC_FILES += power-msmnile.c
+qcom_power_src_files += power-msmnile.c
 endif
 
 ifeq ($(call is-board-platform-in-list, msm8909), true)
-LOCAL_SRC_FILES += power-8909.c
+qcom_power_src_files += power-8909.c
 endif
 
 ifeq ($(call is-board-platform-in-list,msm8916), true)
-LOCAL_SRC_FILES += power-8916.c
+qcom_power_src_files += power-8916.c
 endif
 
 endif  #  End of board specific list
 
 ifneq ($(TARGET_POWER_SET_FEATURE_LIB),)
-    LOCAL_STATIC_LIBRARIES += $(TARGET_POWER_SET_FEATURE_LIB)
+    qcom_power_static_libs += $(TARGET_POWER_SET_FEATURE_LIB)
 endif
 
 ifeq ($(TARGET_USES_INTERACTION_BOOST),true)
-    LOCAL_CFLAGS += -DINTERACTION_BOOST
+    qcom_power_cflags += -DINTERACTION_BOOST
 endif
 
 ifneq ($(TARGET_POWERHAL_SET_INTERACTIVE_EXT),)
-LOCAL_CFLAGS += -DSET_INTERACTIVE_EXT
-LOCAL_SRC_FILES += ../../../$(TARGET_POWERHAL_SET_INTERACTIVE_EXT)
+qcom_power_cflags += -DSET_INTERACTIVE_EXT
+qcom_power_src_files += ../../../$(TARGET_POWERHAL_SET_INTERACTIVE_EXT)
 endif
 
 ifneq ($(TARGET_TAP_TO_WAKE_NODE),)
-    LOCAL_CFLAGS += -DTAP_TO_WAKE_NODE=\"$(TARGET_TAP_TO_WAKE_NODE)\"
+    qcom_power_cflags += -DTAP_TO_WAKE_NODE=\"$(TARGET_TAP_TO_WAKE_NODE)\"
 endif
 
 ifeq ($(TARGET_HAS_LEGACY_POWER_STATS),true)
-    LOCAL_CFLAGS += -DLEGACY_STATS
+    qcom_power_cflags += -DLEGACY_STATS
 endif
 
 ifeq ($(TARGET_HAS_NO_POWER_STATS),true)
-    LOCAL_CFLAGS += -DNO_STATS
+    qcom_power_cflags += -DNO_STATS
 endif
 
 ifneq ($(TARGET_RPM_STAT),)
-    LOCAL_CFLAGS += -DRPM_STAT=\"$(TARGET_RPM_STAT)\"
+    qcom_power_cflags += -DRPM_STAT=\"$(TARGET_RPM_STAT)\"
 endif
 
 ifneq ($(TARGET_RPM_MASTER_STAT),)
-    LOCAL_CFLAGS += -DRPM_MASTER_STAT=\"$(TARGET_RPM_MASTER_STAT)\"
+    qcom_power_cflags += -DRPM_MASTER_STAT=\"$(TARGET_RPM_MASTER_STAT)\"
 endif
 
 ifneq ($(TARGET_RPM_SYSTEM_STAT),)
-    LOCAL_CFLAGS += -DRPM_SYSTEM_STAT=\"$(TARGET_RPM_SYSTEM_STAT)\"
+    qcom_power_cflags += -DRPM_SYSTEM_STAT=\"$(TARGET_RPM_SYSTEM_STAT)\"
 endif
 
 ifneq ($(TARGET_WLAN_POWER_STAT),)
-    LOCAL_CFLAGS += -DWLAN_POWER_STAT=\"$(TARGET_WLAN_POWER_STAT)\"
+    qcom_power_cflags += -DWLAN_POWER_STAT=\"$(TARGET_WLAN_POWER_STAT)\"
 endif
 
 ifeq ($(TARGET_HAS_NO_WLAN_STATS),true)
-LOCAL_CFLAGS += -DNO_WLAN_STATS
+qcom_power_cflags += -DNO_WLAN_STATS
 endif
 
 ifeq ($(TARGET_ARCH),arm)
-LOCAL_CFLAGS += -DARCH_ARM_32
+qcom_power_cflags += -DARCH_ARM_32
 endif
 
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(qcom_power_src_files)
+LOCAL_C_INCLUDES := $(qcom_power_c_includes)
+LOCAL_CFLAGS := $(qcom_power_cflags)
+LOCAL_HEADER_LIBRARIES := $(qcom_power_header_libs)
+LOCAL_SHARED_LIBRARIES := $(qcom_power_shared_libs)
+LOCAL_STATIC_LIBRARIES := $(qcom_power_static_libs)
+LOCAL_WHOLE_STATIC_LIBRARIES := $(qcom_power_whole_static_libs)
+LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_MODULE := android.hardware.power@1.1-service-qti
 LOCAL_INIT_RC := android.hardware.power@1.1-service-qti.rc
-LOCAL_SHARED_LIBRARIES += \
-    android.hardware.power@1.0 \
-    android.hardware.power@1.1 \
-    vendor.evervolv.power@1.0
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_OWNER := qcom
 LOCAL_VENDOR_MODULE := true
-LOCAL_HEADER_LIBRARIES := libhardware_headers
+
 include $(BUILD_EXECUTABLE)
 
 endif
